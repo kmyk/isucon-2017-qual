@@ -234,7 +234,7 @@ def fetch_unread():
 
     res = []
     for channel_id in channel_ids:
-        cur.execute('SELECT message_id FROM haveread WHERE user_id = %s AND channel_id = %s', (user_id, channel_id))
+        cur.execute('SELECT message_id FROM haveread FORCE INDEX (index_user_id_channel_id) WHERE user_id = %s AND channel_id = %s', (user_id, channel_id))
         row = cur.fetchone()
         if row:
             cur.execute('SELECT COUNT(*) as cnt FROM message WHERE channel_id = %s AND %s < id',
