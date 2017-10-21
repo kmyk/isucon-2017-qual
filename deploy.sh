@@ -23,11 +23,12 @@ web-server() {
     for f in app.py setup.sh requirements.txt ; do
         scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/webapp/python/$f
     done
-    for f in etc/nginx/nginx.conf etc/nginx/sites-enabled/nginx.conf ; do
+    for f in etc/nginx/nginx.conf etc/nginx/sites-enabled/nginx.conf etc/systemd/system/isubata.python.service ; do
         scp -i $IDENTITY $f isucon@$IP_ADDR:$(basename $f)
         ssh -i $IDENTITY isucon@$IP_ADDR "sudo mv $(basename $f) /$f"
     done
     ssh -i $IDENTITY isucon@$IP_ADDR '
+    sudo systemctl daemon-reload
     sudo systemctl restart nginx
     sudo systemctl restart isubata.python
     sudo sysctl -p
