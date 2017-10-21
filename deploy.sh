@@ -20,7 +20,9 @@ web-server() {
     IP_ADDR="$1"
     IDENTITY="$2"
 
-    # scp -i $IDENTITY -P 2222 nginx.conf isucon@$IP_ADDR:/home/isucon/nginx.conf
+    for f in app.py setup.sh requirements.txt ; do
+        scp -i $IDENTITY -P 2222 $f isucon@$IP_ADDR:isubata/webapp/python/$f
+    done
     # ssh -i $IDENTITY -p 2222 isucon@$IP_ADDR '
     # sudo cp nginx.conf /etc/nginx/nginx.conf
     # '
