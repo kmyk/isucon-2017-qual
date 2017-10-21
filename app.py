@@ -117,7 +117,7 @@ def get_index():
 
 def get_channel_list_info(focus_channel_id=None):
     cur = dbh().cursor()
-    cur.execute("SELECT * FROM channel ORDER BY id")
+    cur.execute("SELECT id, name, description FROM channel ORDER BY id")
     channels = cur.fetchall()
     description = ""
 
@@ -162,7 +162,7 @@ def get_login():
 def post_login():
     name = flask.request.form['name']
     cur = dbh().cursor()
-    cur.execute("SELECT * FROM user WHERE name = %s", (name,))
+    cur.execute("SELECT id, password, salt FROM user WHERE name = %s", (name,))
     row = cur.fetchone()
     if not row or row['password'] != hashlib.sha1(
             (row['salt'] + flask.request.form['password']).encode('utf-8')).hexdigest():
@@ -198,7 +198,7 @@ def get_message():
     channel_id = int(flask.request.args.get('channel_id'))
     last_message_id = int(flask.request.args.get('last_message_id'))
     cur = dbh().cursor()
-    cur.execute("SELECT * FROM message WHERE id > %s AND channel_id = %s ORDER BY id DESC LIMIT 100",
+    cur.execute("SELECT id, user_id, created_at, content FROM message WHERE id > %s AND channel_id = %s ORDER BY id DESC LIMIT 100",
                 (last_message_id, channel_id))
     rows = cur.fetchall()
     response = []
@@ -236,7 +236,7 @@ def fetch_unread():
 
     res = []
     for channel_id in channel_ids:
-        cur.execute('SELECT * FROM haveread WHERE user_id = %s AND channel_id = %s', (user_id, channel_id))
+        cur.execute('SELECT message_id FROM haveread WHERE user_id = %s AND channel_id = %s', (user_id, channel_id))
         row = cur.fetchone()
         if row:
             cur.execute('SELECT COUNT(*) as cnt FROM message WHERE channel_id = %s AND %s < id',
@@ -388,7 +388,7 @@ def ext2mime(ext):
 @app.route('/icons/<file_name>')
 def get_icon(file_name):
     cur = dbh().cursor()
-    cur.execute("SELECT * FROM image WHERE name = %s", (file_name,))
+    cur.execute("SELECT data FROM image WHERE name = %s", (file_name,))
     row = cur.fetchone()
     ext = os.path.splitext(file_name)[1] if '.' in file_name else ''
     mime = ext2mime(ext)
