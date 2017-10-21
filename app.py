@@ -198,7 +198,7 @@ def get_message():
     channel_id = int(flask.request.args.get('channel_id'))
     last_message_id = int(flask.request.args.get('last_message_id'))
     cur = dbh().cursor()
-    cur.execute("SELECT id, user_id, created_at, content FROM message WHERE id > %s AND channel_id = %s ORDER BY id DESC LIMIT 100",
+    cur.execute("SELECT id, user_id, created_at, content FROM message FORCE INDEX (index_id_channel_id) WHERE id > %s AND channel_id = %s ORDER BY id DESC LIMIT 100",
                 (last_message_id, channel_id))
     rows = cur.fetchall()
     response = []
