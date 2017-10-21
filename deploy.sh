@@ -23,6 +23,11 @@ web-server() {
     for f in app.py setup.sh requirements.txt ; do
         scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/webapp/python/$f
     done
+    ssh -i $IDENTITY isucon@$IP_ADDR '
+    sudo systemctl restart nginx
+    sudo systemctl restart isubata.python
+    sudo sysctl -p
+    '
 }
 
 db-server() {
@@ -33,15 +38,17 @@ db-server() {
         scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/db/$f
     done
     ssh -i $IDENTITY isucon@$IP_ADDR '
+    sudo systemctl restart mysql
     sudo ./isubata/db/init.sh
+    sudo sysctl -p
     '
 }
 
 # $ scp isucon@163.43.31.252:.ssh/id_rsa id_rsa.1
 # $ scp isucon@163.43.29.226:.ssh/id_rsa id_rsa.2
 # $ scp isucon@163.43.28.193:.ssh/id_rsa id_rsa.3
-web-server 163.43.31.252 id_rsa.1
-web-server 163.43.29.226 id_rsa.2
 db-server  163.43.28.193 id_rsa.3
+web-server 163.43.29.226 id_rsa.2
+web-server 163.43.31.252 id_rsa.1
 
 echo '*DEPLOY END*'
