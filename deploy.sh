@@ -23,14 +23,18 @@ web-server() {
     for f in app.py setup.sh requirements.txt ; do
         scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/webapp/python/$f
     done
-    # ssh -i $IDENTITY -p 2222 isucon@$IP_ADDR '
-    # sudo cp nginx.conf /etc/nginx/nginx.conf
-    # '
 }
 
 db-server() {
     IP_ADDR="$1"
     IDENTITY="$2"
+
+    for f in init.sh isubata.sql ; do
+        scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/db/$f
+    done
+    ssh -i $IDENTITY isucon@$IP_ADDR '
+    sudo ./isubata/db/init.sh
+    '
 }
 
 # $ scp isucon@163.43.31.252:.ssh/id_rsa id_rsa.1
