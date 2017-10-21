@@ -40,6 +40,7 @@ db-server() {
     ssh -i $IDENTITY isucon@$IP_ADDR '
     sudo systemctl restart mysql
     sudo ./isubata/db/init.sh
+    zcat ./isubata/db/isucon7q-initial-dataset.sql.gz | sudo mysql -D isubata --default-character-set=utf8mb4
     sudo sysctl -p
     '
 }
