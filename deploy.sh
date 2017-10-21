@@ -41,6 +41,10 @@ db-server() {
     for f in init.sh isubata.sql ; do
         scp -i $IDENTITY $f isucon@$IP_ADDR:isubata/db/$f
     done
+    for f in etc/mysql/conf.d/mysql.cnf ; do
+        scp -i $IDENTITY $f isucon@$IP_ADDR:$(basename $f)
+        ssh -i $IDENTITY isucon@$IP_ADDR "sudo mv $(basename $f) /$f"
+    done
     ssh -i $IDENTITY isucon@$IP_ADDR '
     sudo systemctl restart mysql
     sudo ./isubata/db/init.sh
